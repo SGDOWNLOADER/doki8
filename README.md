@@ -4,7 +4,7 @@ Docker：https://hub.docker.com/repository/docker/jxxghp/nas-tools
 
 ## **功能：**
 
-主要用于心动日剧(http://www.doki8.net/)签到和评论，每日6+3心动豆
+主要用于[心动日剧](http://www.doki8.net/)签到和评论，每日6+3心动豆
 
 ## 安装
 
