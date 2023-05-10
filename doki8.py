@@ -102,7 +102,7 @@ class Doki8:
                 "wp-submit": "登录"
             }
             response = self.post_response(url=register_url, params=params, headers=headers)
-            if '无效的用户名' in response.text:
+            if '无效的用户名' in response.text or 'The username or password you entered is incorrect.' in response.text:
                 print('【ERROR】请检查你的用户名和密码是否正确！！！')
                 sys.exit()
             else:
@@ -116,7 +116,7 @@ class Doki8:
             integral = int(re.findall('积分: (\d+) 心动豆', text)[0])
             return text, integral
         except Exception as e:
-            print(e)
+            print(f'【ERROR】{e}')
 
     @staticmethod
     def get_tv_num(response_text, ls_index):
@@ -139,23 +139,26 @@ if __name__ == '__main__':
     user_name = os.environ.get('USER_NAME') if os.environ.get('USER_NAME') else input('请输入登录的用户名：')
     passwd = os.environ.get('PASSWD') if os.environ.get('PASSWD') else input('请输入登录的密码：')
     doki8 = Doki8(user_name, passwd)
-    text, old_integral = doki8.get_integral()
-    test = doki8.bs4_parsing_infos('div.post-thumbnail', text)
-    tv_num = doki8.get_tv_num(test, 0)
-    comment_response = doki8.get_comment_response(tv_num).text
-    tmp, new_integral = doki8.get_integral()
-    if '重复评论' not in comment_response:
-        if new_integral != old_integral:
-            print(f'经过1次,评论成功的网页：http://www.doki8.net/{tv_num}.html')
+    try:
+        text, old_integral = doki8.get_integral()
+        test = doki8.bs4_parsing_infos('div.post-thumbnail', text)
+        tv_num = doki8.get_tv_num(test, 0)
+        comment_response = doki8.get_comment_response(tv_num).text
+        tmp, new_integral = doki8.get_integral()
+        if '重复评论' not in comment_response:
+            if new_integral != old_integral:
+                print(f'经过1次,评论成功的网页：http://www.doki8.net/{tv_num}.html')
+            else:
+                while new_integral == old_integral:
+                    for i in range(1, len(test)):
+                        tv_num = doki8.get_tv_num(test, i)
+                        comment_response = doki8.get_comment_response(tv_num).text
+                        time.sleep(1)
+                        tmp, new_integral = doki8.get_integral()
+                    else:
+                        print(f'经过{i+1}次，评论成功的网页：http://www.doki8.net/{tv_num}.html')
+                print('已完成每日的签到和评论')
         else:
-            while new_integral == old_integral:
-                for i in range(1, len(test)):
-                    tv_num = doki8.get_tv_num(test, i)
-                    comment_response = doki8.get_comment_response(tv_num).text
-                    time.sleep(1)
-                    tmp, new_integral = doki8.get_integral()
-                else:
-                    print(f'经过{i+1}次，评论成功的网页：http://www.doki8.net/{tv_num}.html')
-            print('已完成每日的签到和评论')
-    else:
-        print('已完成每日的签到和评论请勿重复评论！！！')
+            print('已完成每日的签到和评论请勿重复评论！！！')
+    except Exception as e:
+        print(f'【ERROR】{e}')
