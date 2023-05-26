@@ -145,20 +145,16 @@ if __name__ == '__main__':
         tv_num = doki8.get_tv_num(test, 0)
         comment_response = doki8.get_comment_response(tv_num).text
         tmp, new_integral = doki8.get_integral()
-        if '重复评论' not in comment_response:
-            if new_integral != old_integral:
-                print(f'经过1次,评论成功的网页：http://www.doki8.net/{tv_num}.html')
-            else:
-                while new_integral == old_integral:
-                    for i in range(1, len(test)):
-                        tv_num = doki8.get_tv_num(test, i)
-                        comment_response = doki8.get_comment_response(tv_num).text
-                        time.sleep(1)
-                        tmp, new_integral = doki8.get_integral()
-                    else:
-                        print(f'经过{i+1}次，评论成功的网页：http://www.doki8.net/{tv_num}.html')
-                print('已完成每日的签到和评论')
+        if '重复评论' not in comment_response or new_integral != old_integral:
+            print(f'经过1次,评论成功的网页：http://www.doki8.net/{tv_num}.html')
         else:
-            print('已完成每日的签到和评论请勿重复评论！！！')
+            for i in range(1, len(test)):
+                while new_integral == old_integral:
+                    tv_num = doki8.get_tv_num(test, i)
+                    comment_response = doki8.get_comment_response(tv_num).text
+                    time.sleep(5)
+                    tmp, new_integral = doki8.get_integral()
+                    print(f'经过{i+1}次，评论成功的网页：http://www.doki8.net/{tv_num}.html')
+            print('已完成每日的签到和评论')
     except Exception as e:
         print(f'【ERROR】{e}')
