@@ -123,7 +123,7 @@ class Doki8:
             data = self.get_response(url=integral_url, headers=headers).text
             selector = '#the-list > tr:nth-child(1)'
             integral_latest_bs = doki8.bs4_parsing_infos(selector, data)[0]
-            regex = re.findall('每日评论奖励完成', str(data))
+            regex = re.findall('每日评论奖励完成', str(integral_latest_bs))
             if len(regex) == 1:
                 integral_latest_time = str(integral_latest_bs.find(class_="column-time").string).split(' ')[0]
                 in_ls = re.findall(r'\d+', integral_latest_time)
@@ -170,17 +170,15 @@ if __name__ == '__main__':
         test = doki8.bs4_parsing_infos('div.post-thumbnail', text)
         tv_num = doki8.get_tv_num(test, 0)
         comment_response = doki8.get_comment_response(tv_num).text
-        tmp, new_integral = doki8.get_integral()
         comment_time_ls = doki8.get_integral_flag(integral_url)
         now_time_ls = get_now_time_ls()
         if not comment_time_ls or comment_time_ls != now_time_ls:
             i = 0
-            while comment_time_ls == now_time_ls:
+            while comment_time_ls != now_time_ls:
                 tv_num = doki8.get_tv_num(test, i)
                 comment_response = doki8.get_comment_response(tv_num).text
-                time.sleep(6)
+                time.sleep(8)
                 comment_time_ls = doki8.get_integral_flag(integral_url)
-                tmp, new_integral = doki8.get_integral()
                 i = i + 1
             print(f'经过{i + 1}次，评论成功的网页：http://www.doki8.net/{tv_num}.html')
         print('已完成每日的签到和评论')
