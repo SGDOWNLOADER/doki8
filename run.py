@@ -57,7 +57,6 @@ class Doki8:
             print(f'【ERROR】{e}')
             sys.exit()
 
-
     @staticmethod
     def bs4_parsing_infos(selector, data):
         bf = BeautifulSoup(data, 'lxml')
@@ -72,31 +71,35 @@ class Doki8:
                 compute_result = int(compute_captcha_ls[4]) - int(compute_captcha_ls[0])
             else:
                 compute_result = int(compute_captcha_ls[0]) + int(compute_captcha_ls[2])
+            return compute_result
         elif '−' in compute_captcha_ls:
             if compute_captcha_ls[2] == '':
                 compute_result = int(compute_captcha_ls[4]) - int(compute_captcha_ls[0])
             else:
                 compute_result = int(compute_captcha_ls[0]) - int(compute_captcha_ls[2])
+            return compute_result
         elif '×' in compute_captcha_ls:
             if compute_captcha_ls[2] == '':
                 compute_result = int(compute_captcha_ls[4]) / int(compute_captcha_ls[0])
             else:
                 compute_result = int(compute_captcha_ls[0]) * int(compute_captcha_ls[2])
+            return compute_result
         else:
             if compute_captcha_ls[2] == '':
                 compute_result = int(compute_captcha_ls[0]) / int(compute_captcha_ls[4])
             else:
                 compute_result = int(compute_captcha_ls[0]) / int(compute_captcha_ls[2])
-        return compute_result
+            return compute_result
 
     def login(self, username, password):
         try:
             info = self.get_response(login_url, headers).text
             compute_captcha_info = Doki8.bs4_parsing_infos('#loginform > p.math-captcha-form > span', info)[0]
+            compute_result = Doki8.get_compute_captcha(compute_captcha_info)
             params = {
                 "log": f"{username}",
                 "pwd": f"{password}",
-                "mc-value": mc-value,
+                "mc-value": int(compute_result),
                 "rememberme": "forever",
                 "wp-submit": "登录"
             }

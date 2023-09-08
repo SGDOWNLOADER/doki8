@@ -3,5 +3,4 @@ gcc
 musl-dev
 python3-dev
 py3-pip
-zip
 curl
