@@ -20,7 +20,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ secrets.HUB_DOCKER_USERNAME }}/nas-tools
+          images: ${{ secrets.HUB_DOCKER_USERNAME }}/doki8
 
       -
         name: Release version
@@ -57,7 +57,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./docker/Dockerfile
+          file: ./Dockerfile
           platforms: |
             linux/amd64
             linux/arm64
