@@ -28,8 +28,8 @@ class Doki8:
     def __init__(self, username, password, proxies):
         self.session = requests.session()
         adapter = HTTPAdapter(
-            pool_connections=20,
-            pool_maxsize=20,
+            pool_connections=30,
+            pool_maxsize=30,
             max_retries=5,
         )
         self.session.mount('http://', adapter)
@@ -41,7 +41,7 @@ class Doki8:
 
         try:
             response = self.session.get(url=url, headers=headers,
-                                params=params, proxies=self.proxies, timeout=10)
+                                params=params, proxies=self.proxies, timeout=30)
             response.encoding = encoding
             return response
         except requests.exceptions.RequestException as e:
@@ -51,7 +51,7 @@ class Doki8:
     def post_response(self,  url, headers, params=None, encoding='utf-8'):
         try:
             response = self.session.post(url=url, data=params,
-                                    headers=headers, proxies=self.proxies, timeout=10)
+                                    headers=headers, proxies=self.proxies, timeout=30)
             response.encoding = encoding
             return response
         except requests.exceptions.RequestException as e:
