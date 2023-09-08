@@ -25,7 +25,7 @@ encoding = 'utf-8'
 
 
 class Doki8:
-    def __init__(self, username, password):
+    def __init__(self, username, password, proxies):
         self.session = requests.session()
         adapter = HTTPAdapter(
             pool_connections=20,
@@ -34,23 +34,24 @@ class Doki8:
         )
         self.session.mount('http://', adapter)
         self.session.mount('https://', adapter)
+        self.proxies = proxies if proxies else None
         self.login(username, password)
 
-    def get_response(self, url, headers, params=None, proxies=None, encoding='utf-8'):
+    def get_response(self, url, headers, params=None, encoding='utf-8'):
 
         try:
             response = self.session.get(url=url, headers=headers,
-                                params=params, proxies=proxies, timeout=10)
+                                params=params, proxies=self.proxies, timeout=10)
             response.encoding = encoding
             return response
         except requests.exceptions.RequestException as e:
             print(f'【ERROR】{e}')
             sys.exit()
 
-    def post_response(self,  url, headers, params=None, proxies=None, encoding='utf-8'):
+    def post_response(self,  url, headers, params=None, encoding='utf-8'):
         try:
             response = self.session.post(url=url, data=params,
-                                    headers=headers, proxies=proxies, timeout=10)
+                                    headers=headers, proxies=self.proxies, timeout=10)
             response.encoding = encoding
             return response
         except requests.exceptions.RequestException as e:
@@ -166,10 +167,11 @@ def get_now_time_ls():
 
 
 if __name__ == '__main__':
-    user_name = os.environ.get('USER_NAME') if os.environ.get('USER_NAME') else input('请输入登录的用户名：')
-    passwd = os.environ.get('PASSWD') if os.environ.get('PASSWD') else input('请输入登录的密码：')
+    user_name = os.environ.get('USER_NAME')
+    passwd = os.environ.get('PASSWD')
+    proxy_ip = os.environ.get('PROXY_IP')
     integral_url = f'http://www.doki8.net/members/{user_name}/pointhistory/'
-    doki8 = Doki8(user_name, passwd)
+    doki8 = Doki8(user_name, passwd, proxy_ip)
     try:
         text, old_integral = doki8.get_integral()
         test = doki8.bs4_parsing_infos('div.post-thumbnail', text)
