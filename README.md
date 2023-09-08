@@ -4,7 +4,7 @@ Docker：https://hub.docker.com/repository/docker/miraclemie/doki8
 
 ## **功能：**
 
-主要用于[心动日剧](http://www.doki8.net/)签到和评论，每日6+3心动豆，建议使用代理（梯子），偶尔网络会超时连接
+主要用于[心动日剧](http://www.doki8.net/)签到和评论，每日6+3心动豆，建议使用代理（梯子），就是增加PROXY_IP这个变量，偶尔网络会超时连接
 
 ## 安装
 
