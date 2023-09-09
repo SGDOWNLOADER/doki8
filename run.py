@@ -34,7 +34,8 @@ class Doki8:
         )
         self.session.mount('http://', adapter)
         self.session.mount('https://', adapter)
-        self.proxies = proxies if proxies else None
+        proxy_ip = {"http": proxies,"https": proxies}                                                         
+        self.proxies = proxy_ip if proxies else None   
         self.login(username, password)
 
     def get_response(self, url, headers, params=None, encoding='utf-8'):
@@ -68,25 +69,33 @@ class Doki8:
     def get_compute_captcha(compute_captcha_info):
         compute_captcha_ls = compute_captcha_info.text.split(' ')
         if '+' in compute_captcha_ls:
-            if compute_captcha_ls[2] == '':
+            if compute_captcha_ls[0] == '':
+                compute_result = int(compute_captcha_ls[4]) - int(compute_captcha_ls[2])
+            elif compute_captcha_ls[2] == '':
                 compute_result = int(compute_captcha_ls[4]) - int(compute_captcha_ls[0])
             else:
                 compute_result = int(compute_captcha_ls[0]) + int(compute_captcha_ls[2])
             return compute_result
         elif '−' in compute_captcha_ls:
-            if compute_captcha_ls[2] == '':
+            if compute_captcha_ls[0] == '':
+                compute_result = int(compute_captcha_ls[4]) + int(compute_captcha_ls[2])
+            elif compute_captcha_ls[2] == '':
                 compute_result = int(compute_captcha_ls[4]) - int(compute_captcha_ls[0])
             else:
                 compute_result = int(compute_captcha_ls[0]) - int(compute_captcha_ls[2])
             return compute_result
         elif '×' in compute_captcha_ls:
-            if compute_captcha_ls[2] == '':
+            if compute_captcha_ls[0] == '':
+                compute_result = int(compute_captcha_ls[4]) / int(compute_captcha_ls[2])
+            elif compute_captcha_ls[2] == '':
                 compute_result = int(compute_captcha_ls[4]) / int(compute_captcha_ls[0])
             else:
                 compute_result = int(compute_captcha_ls[0]) * int(compute_captcha_ls[2])
             return compute_result
         else:
-            if compute_captcha_ls[2] == '':
+            if compute_captcha_ls[0] == '':
+                compute_result = int(compute_captcha_ls[4]) * int(compute_captcha_ls[2])
+            elif compute_captcha_ls[2] == '':
                 compute_result = int(compute_captcha_ls[0]) / int(compute_captcha_ls[4])
             else:
                 compute_result = int(compute_captcha_ls[0]) / int(compute_captcha_ls[2])
