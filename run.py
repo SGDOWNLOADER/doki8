@@ -80,7 +80,7 @@ class Doki8:
             if compute_captcha_ls[0] == '':
                 compute_result = int(compute_captcha_ls[4]) + int(compute_captcha_ls[2])
             elif compute_captcha_ls[2] == '':
-                compute_result = int(compute_captcha_ls[4]) - int(compute_captcha_ls[0])
+                compute_result = int(compute_captcha_ls[0]) - int(compute_captcha_ls[4])
             else:
                 compute_result = int(compute_captcha_ls[0]) - int(compute_captcha_ls[2])
             return compute_result
