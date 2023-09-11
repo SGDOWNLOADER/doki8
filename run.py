@@ -103,7 +103,7 @@ class Doki8:
 
     def login(self, username, password):
         try:
-            info = self.get_response(login_url, headers).text
+            info = self.post_response(login_url, headers).text
             compute_captcha_info = Doki8.bs4_parsing_infos('#loginform > p.math-captcha-form > span', info)[0]
             compute_result = Doki8.get_compute_captcha(compute_captcha_info)
             params = {
