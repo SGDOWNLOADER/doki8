@@ -3,7 +3,6 @@ import time
 import requests
 from requests.adapters import HTTPAdapter
 import http.client
-import io
 import os
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
@@ -18,9 +17,9 @@ headers = {'User-Agent': ua.random,
            'Upgrade-Insecure-Requests': '1',
            'Host': 'www.doki8.net'}
 
-main_url = 'http://www.doki8.net/'
-login_url = 'http://www.doki8.net/login'
-comment_url = 'http://www.doki8.net/wp-comments-post.php'
+main_url = 'http://www.doki8.net'
+login_url = main_url + '/login'
+comment_url = main_url + '/wp-comments-post.php'
 encoding = 'utf-8'
 
 
@@ -34,7 +33,7 @@ class Doki8:
         )
         self.session.mount('http://', adapter)
         self.session.mount('https://', adapter)
-        proxy_ip = {"http": proxies,"https": proxies}                                                         
+        proxy_ip = {"http": proxies, "https": proxies}
         self.proxies = proxy_ip if proxies else None   
         self.login(username, password)
 
@@ -128,10 +127,11 @@ class Doki8:
     def get_integral(self):
         try:
             text = self.get_response(url=main_url, headers=headers).text
-            integral = int(re.findall('积分: (\d+) 心动豆', text)[0])
+            integral_str = re.findall('积分: (\d+.*)心动豆', text)[0].replace(' ', '')
+            integral = int(integral_str)
             return text, integral
         except Exception as e:
-            print(f'【ERROR】{e}')
+            print(f'【ERROR】首页心动豆正则匹配规则报错：{e}')
 
     def get_integral_flag(self, integral_url):
         try:
@@ -147,7 +147,7 @@ class Doki8:
             else:
                 return None
         except Exception as e:
-            print(f'【ERROR】{e}')
+            print(f'【ERROR】用户详细信息报错：{e}')
 
     @staticmethod
     def get_tv_num(response_text, ls_index):
@@ -179,7 +179,7 @@ if __name__ == '__main__':
     user_name = os.environ.get('USER_NAME')
     passwd = os.environ.get('PASSWD')
     proxy_ip = os.environ.get('PROXY_IP')
-    integral_url = f'http://www.doki8.net/members/{user_name}/pointhistory/'
+    integral_url = f'{main_url}/members/{user_name}/pointhistory/'
     doki8 = Doki8(user_name, passwd, proxy_ip)
     try:
         text, old_integral = doki8.get_integral()
@@ -199,4 +199,4 @@ if __name__ == '__main__':
             print(f'经过{i + 1}次，评论成功的网页：http://www.doki8.net/{tv_num}.html')
         print('已完成每日的签到和评论')
     except Exception as e:
-        print(f'【ERROR】{e}')
+        print(f'【ERROR】总代码报错：{e}')
