@@ -1,19 +1,12 @@
-FROM miraclemie/alpine:3.18
-RUN apk add --no-cache libffi-dev \
+FROM miraclemie/python:3.10.11-alpine
+RUN apk add --no-cache --virtual .build-deps \
+        libffi-dev \
+        gcc \
+        musl-dev \
     && apk add --no-cache $(echo $(wget --no-check-certificate -qO- https://raw.githubusercontent.com/SGDOWNLOADER/doki8/master/package_list.txt)) \
-    && ln -sf /usr/bin/python3 /usr/bin/python \
-    && if [ "$(uname -m)" = "x86_64" ]; then ARCH=amd64; elif [ "$(uname -m)" = "aarch64" ]; then ARCH=arm64; fi \
-    && curl https://dl.min.io/client/mc/release/linux-${ARCH}/mc --create-dirs -o /usr/bin/mc \
-    && chmod +x /usr/bin/mc \
-    && mkdir -p /root/.pip \
-    && echo $'[global] \n\
-    timeout = 600 \n\
-    index-url = https://pypi.tuna.tsinghua.edu.cn/simple \n\
-    trusted-host = pypi.tuna.tsinghua.edu.cn \n'\
-    > /root/.pip/pip.conf \
     && pip install --upgrade pip setuptools wheel \
     && pip install -r https://raw.githubusercontent.com/SGDOWNLOADER/doki8/master/requirements.txt \
-    && apk del libffi-dev \
+    && apk del --purge .build-deps \
     && rm -rf /tmp/* /root/.cache /var/cache/apk/* \
     && pip cache purge
 ENV LANG="C.UTF-8" \
@@ -25,9 +18,7 @@ ENV LANG="C.UTF-8" \
     UMASK=000 \
     WORKDIR="/doki8"
 WORKDIR ${WORKDIR}
-RUN echo 'fs.inotify.max_user_watches=524288' >> /etc/sysctl.conf \
-    && echo 'fs.inotify.max_user_instances=524288' >> /etc/sysctl.conf \
-    && git config --global pull.ff only \
+RUN git config --global pull.ff only \
     && git clone -b ${DOKI8_VERSION} ${REPO_URL} ${WORKDIR} --depth=1 --recurse-submodule \
     && git config --global --add safe.directory ${WORKDIR}
 CMD ["python", "/doki8/run.py"]
